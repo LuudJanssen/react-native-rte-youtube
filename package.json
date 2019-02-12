@@ -15,13 +15,9 @@
     "babel-jest": "24.1.0",
     "jest": "24.1.0",
     "metro-react-native-babel-preset": "0.51.1",
-    "react-test-renderer": "16.6.3",
-    "react-native-simple-markdown": "../react-native-simple-markdown/react-native-simple-markdown-1.0.0.tgz"
+    "react-test-renderer": "16.6.3"
   },
   "jest": {
     "preset": "react-native"
-  },
-  "runtimeArgs": [
-    "--preserve-symlinks"
-  ]
+  }
 }

@@ -24,7 +24,7 @@ export default class App extends Component<Props> {
     return (
         <ScrollView>
           <Text>test</Text>
-          <Markdown styles={markdownStyles} style={{width: 500, height: 1000}}>
+          <Markdown styles={markdownStyles} style={{width: 500, height: 1000}} errorHandler={console.log.bind(console)}>
             #Markdown in react-native is so cool!
 
             You can **emphasize** what you want, or just _suggest it_ 😏…
