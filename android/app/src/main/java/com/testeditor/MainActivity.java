@@ -1,5 +1,6 @@
 package com.testeditor;
 
+import com.igorbelyayev.rnlocalresource.RNLocalResourcePackage;
 import com.facebook.react.ReactActivity;
 
 public class MainActivity extends ReactActivity {
