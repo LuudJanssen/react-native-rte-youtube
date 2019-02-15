@@ -29,14 +29,9 @@ export default class App extends Component<Props> {
     };
 
     componentDidMount() {
-        /*Promise.all([loadLocalResource(Page), loadLocalResource(CSS), loadLocalResource(JS)]).then((recourses) => {
+        Promise.all([loadLocalResource(Page), loadLocalResource(CSS), loadLocalResource(JS)]).then((recourses) => {
             this.setState({ data: recourses[0].replace('<CSS></CSS>', recourses[1]).replace('<JS></JS>', recourses[2]) });
-        });*/
-        loadLocalResource(Page).then((r) => loadLocalResource(CSS).then((c) => loadLocalResource(JS).then((j) => {
-            this.setState({
-                data: r.replace('<CSS></CSS>', c).replace('<JS></JS>', j)
-            });
-        })));
+        });
     }
 
 
@@ -48,7 +43,7 @@ export default class App extends Component<Props> {
         // this is the content you want to show after the promise has resolved
         return (
             <WebView
-                onMessage={(event) => console.log((event.nativeEvent.data))}
+                onMessage={(event) => console.log(JSON.parse(event.nativeEvent.data))}
                 javaScriptEnabled={true}
                 domStorageEnabled={true}
                 onError={ev => console.log(ev)}

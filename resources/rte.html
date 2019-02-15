@@ -9,8 +9,9 @@
 </head>
 
 <body>
-    <div id="editor-container">
-    </div>
+    <div id="editor-container"> </div>
+    <br><br><br>
+    <div id="view-container"> </div>
     <script>
         /*const prevFn = window.postMessage;
         window.postMessage = (...arg) => {
@@ -19,10 +20,8 @@
             prevFn(...arg);
         }*/
 
-        var quill = new Quill('#editor-container', {
-            //readOnly: true,
+        const editor = new Quill('#editor-container', {
             modules: {
-                //toolbar: false,
                 toolbar: [
                     [{ header: [1, 2, false] }],
                     ['bold', 'italic', 'underline'],
@@ -32,12 +31,36 @@
             theme: 'snow' // or 'bubble'
         });
 
-        quill.setContents({ "ops": [{ "insert": { "video": "https://www.youtube.com/embed/xvVsaU9l-3I?showinfo=0" } }, { "insert": "\n" }] });
+        const view = new Quill('#view-container', {
+            readOnly: true,
+            modules: {
+                toolbar: false
+            },
+            theme: 'snow' // or 'bubble'
+        });
 
-        //quill.disable();
-        quill.on('text-change', function (delta, oldDelta, source) {
-            window.postMessage(JSON.stringify(quill.getText(0, quill.getLength())));
-            window.postMessage(JSON.stringify(quill.getContents(0, quill.getLength())));
+        const example = {
+            "ops": [{
+                "insert": {
+                    "video": "https://www.youtube.com/embed/xvVsaU9l-3I?showinfo=0"
+                }
+            },
+            {
+                "insert": "\n"
+            },
+            {
+                "insert": "This is a video."
+            }]
+        };
+
+        editor.setContents(example);
+        view.setContents(example);
+
+        editor.on('text-change', function (delta, oldDelta, source) {
+            //document.body.innerHTML = 'WERKEND';
+            view.setContents(editor.getContents());
+            window.postMessage(JSON.stringify(editor.getText()));
+            window.postMessage(JSON.stringify(editor.getContents()));
             if (source == 'api') {
                 console.log("An API call triggered this change.");
             } else if (source == 'user') {
