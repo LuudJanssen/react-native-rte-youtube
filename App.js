@@ -7,8 +7,8 @@
  * @lint-ignore-every XPLATJSCOPYRIGHT1
  */
 
-import React, {Component} from 'react';
-import {Platform, StyleSheet, View} from 'react-native';
+import React, { Component } from 'react';
+import { Platform, StyleSheet, View } from 'react-native';
 import RichTextEditor from "./quillEditor/RichTextEditor";
 
 const instructions = Platform.select({
@@ -22,46 +22,9 @@ type Props = {};
 export default class App extends Component<Props> {
     render() {
         return (
-            <View>
-                <RichTextEditor
-
-                />
-            </View>
+            <RichTextEditor
+                style={{ ...StyleSheet.absoluteFill }}
+            />
         );
     }
 }
-
-const markdownStyles = {
-    heading1: {
-        fontSize: 24,
-        color: 'purple',
-    },
-    link: {
-        color: 'pink',
-    },
-    mailTo: {
-        color: 'orange',
-    },
-    text: {
-        color: '#555555',
-    },
-}
-
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-        backgroundColor: '#F5FCFF',
-    },
-    welcome: {
-        fontSize: 20,
-        textAlign: 'center',
-        margin: 10,
-    },
-    instructions: {
-        textAlign: 'center',
-        color: '#333333',
-        marginBottom: 5,
-    },
-});

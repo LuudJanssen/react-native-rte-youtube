@@ -2,36 +2,41 @@
 <html>
 
 <head>
-    <!-- <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet"> -->
-    <CSS></CSS>
-    <!-- <script src="https://cdn.quilljs.com/1.3.6/quill.js"></script> -->
-    <JS></JS>
+  <!-- <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet"> -->
+  <CSS></CSS>
+  <!-- <script src="https://cdn.quilljs.com/1.3.6/quill.js"></script> -->
+  <JS></JS>
 </head>
 
 <body>
-<div id="editor-container">
-</div>
-<script>
-  /*const prevFn = window.postMessage;
-  window.postMessage = (...arg) => {
-      const msg = JSON.stringify(arg.shift());
-      arg.unshift(msg);
-      prevFn(...arg);
-  }*/
+  <div id="renderer-container"></div>
+  <script>
+    function sendMessage(name, data) {
+      const msg = { name, data };
+      window.postMessage(JSON.stringify(msg));
+    }
 
-  var quill = new Quill('#editor-container', {
-    readOnly: true,
-    modules: {
-      toolbar: false,
-    },
-    theme: 'snow' // or 'bubble'
-  });
+    function receiveMessage(event, callback) {
+      const msg = JSON.parse(event.data);
+      callback(msg.name, msg.data);
+    }
 
-  //quill.disable();
-  quill.on('text-change', function () {
-    window.postMessage(JSON.stringify(quill.getContents()));
-  });
-</script>
+    const quill = new Quill('#renderer-container', {
+      readOnly: true,
+      modules: {
+        toolbar: false,
+      },
+      theme: 'snow' // or 'bubble'
+    });
+
+    document.addEventListener('message', ev => receiveMessage(ev, (name, data) => {
+      postMessage('app#log', [name, data]);
+      if (name.startsWith('quill#')) {
+        const fnName = name.split('quill#')[1];
+        quill[fnName](...data);
+      }
+    }));
+  </script>
 </body>
 
 </html>

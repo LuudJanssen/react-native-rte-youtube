@@ -2,54 +2,56 @@
 <html>
 
 <head>
-    <!-- <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet"> -->
-    <CSS></CSS>
-    <!-- <script src="https://cdn.quilljs.com/1.3.6/quill.js"></script> -->
-    <JS></JS>
+  <!-- <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet"> -->
+  <CSS></CSS>
+  <!-- <script src="https://cdn.quilljs.com/1.3.6/quill.js"></script> -->
+  <JS></JS>
 </head>
 
 <body>
-<div id="editor-container">
-</div>
-<script>
-  /*const prevFn = window.postMessage;
-  window.postMessage = (...arg) => {
-      const msg = JSON.stringify(arg.shift());
-      arg.unshift(msg);
-      prevFn(...arg);
-  }*/
+  <div id="editor-container" style="width: 100%; height: 100%;"></div>
+  <script>
+    function sendMessage(name, data) {
+      const msg = { name, data };
+      window.postMessage(JSON.stringify(msg));
+    }
 
-  let quill = new Quill('#editor-container', {
-    //readOnly: true,
-    modules: {
-      //toolbar: false,
-      toolbar: [
-        [{ header: [1, 2, false] }],
-        ['bold'], ['italic'], ['underline'],
-        ['image'], ['video']
-      ]
-    },
-    theme: 'snow', // or 'bubble'
-    placeholder: 'Placeholder!'
-  });
+    function receiveMessage(event, callback) {
+      const msg = JSON.parse(event.data);
+      callback(msg.name, msg.data);
+    }
 
-  function showImageUI() {
-    window.postMessage('addImage');
-    // quill.insertEmbed(10, 'image', 'testfdkfgsdfg');
-  }
+    function showImageUI() {
+      sendMessage('app#pickImage', '');
+    }
 
-  document.addEventListener('message', function(ev) {
-    quill.insertEmbed(10, 'image', 'testfdkfgsdfg');
-  });
+    const quill = new Quill('#editor-container', {
+      modules: {
+        toolbar: [
+          [{ header: [1, 2, false] }],
+          ['bold'], ['italic'], ['underline'],
+          ['image'], ['video']
+        ]
+      },
+      theme: 'snow', // or 'bubble'
+      placeholder: 'Placeholder!'
+    });
 
-  let toolbar = quill.getModule('toolbar');
-  toolbar.addHandler('image', showImageUI);
+    quill.on('text-change', function () {
+      sendMessage('app#saveContents', [quill.getContents()]);
+    });
 
-  //quill.disable();
-  quill.on('text-change', function () {
-    window.postMessage(JSON.stringify(quill.getContents()));
-  });
-</script>
+    const toolbar = quill.getModule('toolbar');
+    toolbar.addHandler('image', showImageUI);
+
+    document.addEventListener('message', ev => receiveMessage(ev, (name, data) => {
+      sendMessage('app#log', [name, data]);
+      if (name.startsWith('quill#')) {
+        const fnName = name.split('quill#')[1];
+        quill[fnName](...data);
+      }
+    }));
+  </script>
 </body>
 
 </html>

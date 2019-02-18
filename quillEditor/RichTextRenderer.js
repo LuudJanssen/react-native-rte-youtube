@@ -25,6 +25,25 @@ export default class RichTextEditor extends Component<Props> {
     data: null,
   };
 
+  sendMessage(name, data) {
+    const msg = { name, data };
+    this.webView.current.postMessage(JSON.stringify(msg));
+  }
+
+  receiveMessage(event, callback) {
+    let msg = { name: '', data: event.nativeEvent.data }
+    try {
+      msg = JSON.parse(event.nativeEvent.data);
+    } catch (err) {
+      console.log(err);
+    }
+    callback(msg.name, msg.data);
+  }
+
+  log(...params) {
+    console.log(...params);
+  }
+
   componentDidMount() {
     Promise.all([loadLocalResource(Page), loadLocalResource(CSS), loadLocalResource(JS)])
       .then((resources) => {
@@ -43,13 +62,19 @@ export default class RichTextEditor extends Component<Props> {
     // this is the content you want to show after the promise has resolved
     return (
       <WebView
-        onMessage={event => console.log(JSON.parse(event.nativeEvent.data))}
+        onMessage={ev => this.receiveMessage(ev, (name, data) => {
+          this.log(name, data);
+          if (name.startsWith('app#')) {
+            const fnName = name.split('app#')[1];
+            this[fnName](...data);
+          }
+        })}
         javaScriptEnabled
         domStorageEnabled
         scalesPageToFit
         allowFileAccess
-        style={style.input}
-        onError={ev => console.log(ev)}
+        style={{ ...StyleSheet.absoluteFill }}
+        onError={ev => this.log(ev)}
         source={{ html: this.state.data }}
       />
     );
