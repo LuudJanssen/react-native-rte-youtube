@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <!-- <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet"> -->
+    <CSS></CSS>
+    <!-- <script src="https://cdn.quilljs.com/1.3.6/quill.js"></script> -->
+    <JS></JS>
+</head>
+
+<body>
+<div id="editor-container">
+</div>
+<script>
+  /*const prevFn = window.postMessage;
+  window.postMessage = (...arg) => {
+      const msg = JSON.stringify(arg.shift());
+      arg.unshift(msg);
+      prevFn(...arg);
+  }*/
+
+  let quill = new Quill('#editor-container', {
+    //readOnly: true,
+    modules: {
+      //toolbar: false,
+      toolbar: [
+        [{ header: [1, 2, false] }],
+        ['bold'], ['italic'], ['underline'],
+        ['image'], ['video']
+      ]
+    },
+    theme: 'snow', // or 'bubble'
+    placeholder: 'Placeholder!'
+  });
+
+  function showImageUI() {
+    window.postMessage('addImage');
+    // quill.insertEmbed(10, 'image', 'testfdkfgsdfg');
+  }
+
+  document.addEventListener('message', function(ev) {
+    quill.insertEmbed(10, 'image', 'testfdkfgsdfg');
+  });
+
+  let toolbar = quill.getModule('toolbar');
+  toolbar.addHandler('image', showImageUI);
+
+  //quill.disable();
+  quill.on('text-change', function () {
+    window.postMessage(JSON.stringify(quill.getContents()));
+  });
+</script>
+</body>
+
+</html>
