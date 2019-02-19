@@ -1,69 +1,74 @@
 <!DOCTYPE html>
 <html>
+  <head>
+    <!--<link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">-->
+    <CSS></CSS>
+    <!--<script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>-->
+    <JS></JS>
+  </head>
 
-<head>
-   <!--<link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">-->
-  <CSS></CSS>
-   <!--<script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>-->
-  <JS></JS>
-</head>
+  <body style="margin: 0;">
+    <div style="height: 100%; width: 100%;" id="editor-container"></div>
+    <script>
+      function sendMessage(name, data) {
+        const msg = { name, data };
+        window.postMessage(JSON.stringify(msg));
+      }
 
-<body>
-  <div style="QUILLSTYLE"><div id="editor-container"></div></div>
-  <script>
-    function sendMessage(name, data) {
-      const msg = { name, data };
-      window.postMessage(JSON.stringify(msg));
-    }
+      function receiveMessage(event, callback) {
+        const msg = JSON.parse(event.data);
+        callback(msg.name, msg.data);
+      }
 
-    function receiveMessage(event, callback) {
-      const msg = JSON.parse(event.data);
-      callback(msg.name, msg.data);
-    }
+      function showImageUI() {
+        sendMessage("app#pickImage", "");
+      }
 
-    function showImageUI() {
-      sendMessage('app#pickImage', '');
-    }
-
-    function setStyles(styles) {
-        sendMessage('app#log', [styles]);
-        let div = document.querySelector('#editor-container');
+      function setStyles(styles) {
+        sendMessage("app#log", [styles]);
+        let div = document.querySelector("#editor-container");
         Object.keys(styles).forEach(key => {
-            div.style[key] = styles[key];
+          div.style[key] = styles[key];
         });
-    }
+      }
 
-    function setContents(data) {
+      function setContents(data) {
         quill.setContents(data);
-    }
-
-    const config = "QUILLCONFIG";
-    const contents = "QUILLCONTENTS";
-    const quill = new Quill('#editor-container', config);
-
-    quill.on('text-change', function () {
-      sendMessage('app#saveContents', [quill.getContents()]);
-      sendMessage('app#onContentsChange', [quill.getContents()]);
-    });
-
-    quill.setContents(contents);
-
-    const toolbar = quill.getModule('toolbar');
-    toolbar.addHandler('image', showImageUI);
-
-    document.addEventListener('message', ev => receiveMessage(ev, (name, data) => {
-      sendMessage('app#log', [name, data]);
-      if (name.startsWith('quill#')) {
-        const fnName = name.split('quill#')[1];
-        quill[fnName](...data);
-
       }
 
-      if (name === 'setStyles') {
-        setStyles(data);
-      }
-    }));
-  </script>
-</body>
+      const config = "QUILLCONFIG";
+      const contents = "QUILLCONTENTS";
+      const quill = new Quill("#editor-container", config);
 
+      quill.on("text-change", function() {
+        sendMessage("app#saveContents", [quill.getContents()]);
+        sendMessage("app#onContentsChange", [quill.getContents()]);
+      });
+
+      quill.setContents(contents);
+
+      const toolbar = quill.getModule("toolbar");
+      toolbar.addHandler("image", showImageUI);
+
+      document.addEventListener("message", ev =>
+        receiveMessage(ev, (name, data) => {
+          sendMessage("app#log", [name, data]);
+          if (name.startsWith("quill#")) {
+            const fnName = name.split("quill#")[1];
+            quill[fnName](...data);
+          }
+
+          if (name === "insertImage") {
+            insertImage(data);
+          }
+        })
+      );
+      document.onreadystatechange = () =>
+        (document.body.style.height = window.innerHeight - 42 + "px");
+
+      function insertImage(image) {
+        quill.insertEmbed(quill.getSelection().index, "image", image);
+      }
+    </script>
+  </body>
 </html>
