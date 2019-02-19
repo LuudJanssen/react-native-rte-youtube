@@ -2,14 +2,14 @@
 <html>
 
 <head>
-  <!-- <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet"> -->
+   <!--<link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">-->
   <CSS></CSS>
-  <!-- <script src="https://cdn.quilljs.com/1.3.6/quill.js"></script> -->
+   <!--<script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>-->
   <JS></JS>
 </head>
 
 <body>
-  <div id="editor-container" style="width: 100%; height: 100%;"></div>
+  <div id="editor-container" style="QUILLSTYLE"></div>
   <script>
     function sendMessage(name, data) {
       const msg = { name, data };
@@ -25,20 +25,24 @@
       sendMessage('app#pickImage', '');
     }
 
-    const quill = new Quill('#editor-container', {
-      modules: {
-        toolbar: [
-          [{ header: [1, 2, false] }],
-          ['bold'], ['italic'], ['underline'],
-          ['image'], ['video']
-        ]
-      },
-      theme: 'snow', // or 'bubble'
-      placeholder: 'Placeholder!'
-    });
+    function setStyles(styles) {
+        sendMessage('app#log', [styles]);
+        let div = document.querySelector('#editor-container');
+        Object.keys(styles).forEach(key => {
+            div.style[key] = styles[key];
+        });
+    }
+
+    function setContents(data) {
+        quill.setContents(data);
+    }
+
+    const config = "QUILLCONFIG";
+    const quill = new Quill('#editor-container', config);
 
     quill.on('text-change', function () {
       sendMessage('app#saveContents', [quill.getContents()]);
+      sendMessage('app#onContentsChange', [quill.getContents()]);
     });
 
     const toolbar = quill.getModule('toolbar');
@@ -49,6 +53,11 @@
       if (name.startsWith('quill#')) {
         const fnName = name.split('quill#')[1];
         quill[fnName](...data);
+
+      }
+
+      if (name === 'setStyles') {
+        setStyles(data);
       }
     }));
   </script>

@@ -7,9 +7,9 @@
  * @lint-ignore-every XPLATJSCOPYRIGHT1
  */
 
-import React, { Component } from 'react';
-import { Platform, StyleSheet, View } from 'react-native';
-import RichTextEditor from "./quillEditor/RichTextEditor";
+import React, {Component} from 'react';
+import {Platform, StyleSheet, View} from 'react-native';
+import RichTextWrapper from "./quillEditor/RichTextWrapper";
 
 const instructions = Platform.select({
     ios: 'Press Cmd+R to reload,\n' + 'Cmd+D or shake for dev menu',
@@ -22,9 +22,29 @@ type Props = {};
 export default class App extends Component<Props> {
     render() {
         return (
-            <RichTextEditor
-                style={{ ...StyleSheet.absoluteFill }}
-            />
+            <View style={{height: 100}}>
+                <RichTextWrapper
+                    contents={''}
+                    onContentsChange={contents => {
+                        console.log(contents);
+                    }}
+                    config={{
+                        modules: {
+                            toolbar: [
+                                [{ header: [1, 2, false] }],
+                                ['bold'], ['italic'], ['underline'],
+                                ['image'], ['video']
+                            ]
+                        },
+                        theme: 'snow', // or 'bubble'
+                        placeholder: 'Placeholder!'
+                    }}
+                    style={{
+                        width: 50,
+                        height: 50,
+                    }}
+                />
+            </View>
         );
     }
 }
