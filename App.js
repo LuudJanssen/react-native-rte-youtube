@@ -22,7 +22,7 @@ type Props = {};
 export default class App extends Component<Props> {
     render() {
         return (
-            <View style={{height: 100}}>
+            <View style={{...StyleSheet.absoluteFill}}>
                 <RichTextWrapper
                     contents={''}
                     onContentsChange={contents => {
@@ -40,8 +40,8 @@ export default class App extends Component<Props> {
                         placeholder: 'Placeholder!'
                     }}
                     style={{
-                        width: 50,
-                        height: 50,
+                        width: '50px',
+                        height: '50px',
                     }}
                 />
             </View>
