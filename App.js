@@ -24,7 +24,7 @@ export default class App extends Component<Props> {
         return (
             <View style={{...StyleSheet.absoluteFill}}>
                 <RichTextWrapper
-                    contents={''}
+                    contents={{ops: [{insert:'fgfasdjhs jhksdfjhj'}]}}
                     onContentsChange={contents => {
                         console.log(contents);
                     }}

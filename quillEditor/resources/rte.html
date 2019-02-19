@@ -38,12 +38,15 @@
     }
 
     const config = "QUILLCONFIG";
+    const contents = "QUILLCONTENTS";
     const quill = new Quill('#editor-container', config);
 
     quill.on('text-change', function () {
       sendMessage('app#saveContents', [quill.getContents()]);
       sendMessage('app#onContentsChange', [quill.getContents()]);
     });
+
+    quill.setContents(contents);
 
     const toolbar = quill.getModule('toolbar');
     toolbar.addHandler('image', showImageUI);

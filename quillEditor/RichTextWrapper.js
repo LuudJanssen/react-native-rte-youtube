@@ -73,7 +73,9 @@ export default class RichTextWrapper extends Component<Props> {
                 this.setState({
                     data: resources[0].replace('"QUILLCONFIG"', JSON.stringify(this.props.config))
                         .replace('<CSS></CSS>', resources[1])
-                        .replace('<JS></JS>', resources[2]).replace("QUILLSTYLE", this.convertStyle(this.props.style))
+                        .replace('<JS></JS>', resources[2])
+                        .replace("QUILLSTYLE", this.convertStyle(this.props.style))
+                        .replace('"QUILLCONTENTS"', JSON.stringify(this.props.contents || {}))
                 });
 
                 // this.sendMessage('setStyles', [style]);
@@ -101,6 +103,7 @@ export default class RichTextWrapper extends Component<Props> {
                         this[fnName](...data);
                     }
                 })}
+                //onLoad={this.props.contents && this.sendMessage('quill#setContents', [this.props.contents])}
                 javaScriptEnabled
                 domStorageEnabled
                 allowFileAccess
