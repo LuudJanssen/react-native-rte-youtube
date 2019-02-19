@@ -1,5 +1,5 @@
-import React, {Component} from 'react';
-import {StyleSheet, ActivityIndicator, View, WebView} from 'react-native';
+import React, { Component } from 'react';
+import { ActivityIndicator, View, WebView } from 'react-native';
 import loadLocalResource from 'react-native-local-resource';
 import Page from './resources/rte.html';
 import CSS from './resources/css.html';
@@ -51,7 +51,9 @@ export default class RichTextWrapper extends Component<Props> {
     }
 
     pickImage() {
-        ImagePicker.showImagePicker({}, (response) => {
+        ImagePicker.showImagePicker(this.props.imagePickerConfig || {
+            allowsEditing: true,
+        }, (response) => {
             console.log('Response = ', response);
 
             if (response.didCancel) {
@@ -62,7 +64,7 @@ export default class RichTextWrapper extends Component<Props> {
                 this.log('User tapped custom button: ', response.customButton);
             } else {
                 const source = `data:image/jpeg;base64,${response.data}`;
-                this.sendMessage('quill#insertEmbed', [10, 'image', source]);
+                this.sendMessage('quill#insertEmbed', [null, 'image', source]);
             }
         });
     }
@@ -72,13 +74,11 @@ export default class RichTextWrapper extends Component<Props> {
             .then((resources) => {
                 this.setState({
                     data: resources[0].replace('"QUILLCONFIG"', JSON.stringify(this.props.config))
+                        .replace('"QUILLCONTENTS"', JSON.stringify(this.props.contents || {}))
+                        .replace("QUILLSTYLE", this.convertStyle(this.props.style) || "width: 100%; height: 80vh;")
                         .replace('<CSS></CSS>', resources[1])
                         .replace('<JS></JS>', resources[2])
-                        .replace("QUILLSTYLE", this.convertStyle(this.props.style))
-                        .replace('"QUILLCONTENTS"', JSON.stringify(this.props.contents || {}))
                 });
-
-                // this.sendMessage('setStyles', [style]);
             });
     }
 
@@ -86,12 +86,11 @@ export default class RichTextWrapper extends Component<Props> {
         if (this.state.data === null) {
             return (
                 <View>
-                    <ActivityIndicator size="large" color="blue"/>
+                    <ActivityIndicator size="large" color="blue" />
                 </View>
             );
         }
 
-        // this is the content you want to show after the promise has resolved
         return (
             <WebView
                 ref={this.webView}
@@ -103,24 +102,24 @@ export default class RichTextWrapper extends Component<Props> {
                         this[fnName](...data);
                     }
                 })}
-                //onLoad={this.props.contents && this.sendMessage('quill#setContents', [this.props.contents])}
                 javaScriptEnabled
                 domStorageEnabled
                 allowFileAccess
                 onError={ev => console.log(ev)}
-                source={{html: this.state.data}}
+                source={{ html: this.state.data }}
             />
         );
     }
 
     convertStyle(style) {
-        if(!style) {
-            return "width: 100%; height: 80vh;";
+        if (!style) {
+            return;
         }
-        let styleString = "";
 
-        for(let propName in style) {
-            styleString += propName + ": " +style[propName] + "; ";
+        let styleString = '';
+
+        for (let propName in style) {
+            styleString += propName + ': ' + style[propName] + '; ';
         }
 
         return styleString;
