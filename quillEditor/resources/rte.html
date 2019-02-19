@@ -64,7 +64,7 @@
         })
       );
       document.onreadystatechange = () =>
-        (document.body.style.height = window.innerHeight - 42 + "px");
+        (document.body.style.height = window.innerHeight - document.querySelector(".ql-toolbar").offsetHeight + "px");
 
       function insertImage(image) {
         quill.insertEmbed(quill.getSelection().index, "image", image);
