@@ -1,13 +1,12 @@
 import React, { Component } from "react";
-import { StyleSheet, ActivityIndicator, View, WebView } from "react-native";
+import { ActivityIndicator, View, WebView } from "react-native";
 import loadLocalResource from "react-native-local-resource";
 import Page from "./resources/rte.html";
 import CSS from "./resources/css.html";
 import JS from "./resources/js.html";
 import ImagePicker from "react-native-image-picker";
 
-type Props = {};
-export default class RichTextWrapper extends Component<Props> {
+export default class RichTextWrapper extends Component {
   constructor(props) {
     super(props);
     this.webView = React.createRef();
@@ -36,18 +35,11 @@ export default class RichTextWrapper extends Component<Props> {
     console.log(...params);
   }
 
-  saveContents(data) {
+  onContentsChange(content) {
     this.setState({
       rteContent: data
     });
-  }
-
-  onContentsChange(content) {
     this.props.onContentsChange(content);
-  }
-
-  setStyles() {
-    this.sendMessage("setStyles", style);
   }
 
   pickImage() {
@@ -107,8 +99,18 @@ export default class RichTextWrapper extends Component<Props> {
               this.log(name, data);
               if (name.startsWith("app#")) {
                 const fnName = name.split("app#")[1];
+                const safeFunctions = {
+                  log: this.log,
+                  pickImage: this.pickImage,
+                  onContentsChange: this.onContentsChange
+                };
+
+                if (!safeFunctions[fnName]) {
+                  throw new Error(`Function '${fnName}' does not exist`);
+                }
+
                 this.log(fnName, ...data);
-                this[fnName](...data);
+                safeFunctions[fnName](...data);
               }
             })
           }

@@ -41,7 +41,6 @@
       const quill = new Quill("#editor-container", config);
 
       quill.on("text-change", function() {
-        sendMessage("app#saveContents", [quill.getContents()]);
         sendMessage("app#onContentsChange", [quill.getContents()]);
       });
 
@@ -64,7 +63,10 @@
         })
       );
       document.onreadystatechange = () =>
-        (document.body.style.height = window.innerHeight - document.querySelector(".ql-toolbar").offsetHeight + "px");
+        (document.body.style.height =
+          window.innerHeight -
+          document.querySelector(".ql-toolbar").offsetHeight +
+          "px");
 
       function insertImage(image) {
         quill.insertEmbed(quill.getSelection().index, "image", image);
